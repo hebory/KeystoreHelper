@@ -11,10 +11,12 @@ class KeystoreHelper : EditorWindow
         public string keystorePass = "";
         public string keyaliasName = "";
         public string keyaliasPass = "";
+
+        public AndroidMinification releaseMinify;
     }
     private KeystoreData _keystoreData = new KeystoreData();
 
-    private static readonly string privateKey = "1718hy9dsf0jsdlfjds0pa9ids78ahgf81h32re";
+    private static readonly string privateKey = "[PLEASE_ENTER_THE_PRIVATE_KEY_YOU_WANT]";
     private static readonly string keyDataFileName = "user.keyinfo";
 
     [MenuItem("Window/Keystore Helper")]
@@ -26,19 +28,13 @@ class KeystoreHelper : EditorWindow
     void OnEnable()
     {
         _keystoreData = Load();
-
-        PlayerSettings.Android.keystorePass = _keystoreData.keystorePass;
-        PlayerSettings.Android.keyaliasName = _keystoreData.keyaliasName;
-        PlayerSettings.Android.keyaliasPass = _keystoreData.keyaliasPass;
+        AndroidSetting(_keystoreData);
     }
 
     void OnDisable()
     {
         Save(_keystoreData);
-
-        PlayerSettings.Android.keystorePass = _keystoreData.keystorePass;
-        PlayerSettings.Android.keyaliasName = _keystoreData.keyaliasName;
-        PlayerSettings.Android.keyaliasPass = _keystoreData.keyaliasPass;
+        AndroidSetting(_keystoreData);
     }
 
     void OnGUI()
@@ -47,6 +43,10 @@ class KeystoreHelper : EditorWindow
         _keystoreData.keystorePass = EditorGUILayout.PasswordField("Keystore Password", _keystoreData.keystorePass);
         _keystoreData.keyaliasName = EditorGUILayout.TextField("Key Alias Name", _keystoreData.keyaliasName);
         _keystoreData.keyaliasPass = EditorGUILayout.PasswordField("Key Alias Password", _keystoreData.keyaliasPass);
+        EditorGUILayout.Space();
+
+        GUILayout.Label("Build Settings", EditorStyles.boldLabel);
+        _keystoreData.releaseMinify = (AndroidMinification)EditorGUILayout.EnumPopup("Release Minify", _keystoreData.releaseMinify);
     }
 
     static string GetKeyDataPath()
@@ -64,6 +64,15 @@ class KeystoreHelper : EditorWindow
         }
 
         return pathKeyData;
+    }
+
+    static public void AndroidSetting(KeystoreData keystoreData)
+    {
+        PlayerSettings.Android.keystorePass = keystoreData.keystorePass;
+        PlayerSettings.Android.keyaliasName = keystoreData.keyaliasName;
+        PlayerSettings.Android.keyaliasPass = keystoreData.keyaliasPass;
+
+        EditorUserBuildSettings.androidReleaseMinification = keystoreData.releaseMinify;
     }
 
     static void Save(KeystoreData keystoreData)
@@ -102,7 +111,6 @@ class KeystoreHelper : EditorWindow
         ICryptoTransform ct = rm.CreateEncryptor();
         byte[] results = ct.TransformFinalBlock(bytes, 0, bytes.Length);
         return System.Convert.ToBase64String(results, 0, results.Length);
-
     }
 
     private static string Decrypt(string data)

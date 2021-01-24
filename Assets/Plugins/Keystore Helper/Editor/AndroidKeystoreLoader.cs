@@ -8,10 +8,7 @@ public class AndroidKeystoreLoader
     static AndroidKeystoreLoader()
     {
         var keystoreData = KeystoreHelper.Load();
-
-        PlayerSettings.Android.keystorePass = keystoreData.keystorePass;
-        PlayerSettings.Android.keyaliasName = keystoreData.keyaliasName;
-        PlayerSettings.Android.keyaliasPass = keystoreData.keyaliasPass;
+        KeystoreHelper.AndroidSetting(keystoreData);
     }
 }
 
