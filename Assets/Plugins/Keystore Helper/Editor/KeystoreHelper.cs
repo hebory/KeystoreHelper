@@ -37,8 +37,57 @@ class KeystoreHelper : EditorWindow
         AndroidSetting(_keystoreData);
     }
 
+    void AddVersion(int addMajor, int addMinor)
+    {
+        string[] vers = PlayerSettings.bundleVersion.Split('.');
+        int major = int.Parse(vers[0]);
+        int minor = int.Parse(vers[1]);
+        major += addMajor;
+        minor += addMinor;
+        PlayerSettings.bundleVersion = string.Format("{0}.{1}", major, minor);
+        PlayerSettings.Android.bundleVersionCode = major * 100 + minor;
+    }
+
+    void SetVersion(int major, int minor)
+    {
+        PlayerSettings.bundleVersion = string.Format("{0}.{1}", major, minor);
+        PlayerSettings.Android.bundleVersionCode = major * 100 + minor;
+    }
+
     void OnGUI()
     {
+        GUILayout.Label("Build Version", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Version", PlayerSettings.bundleVersion);
+        EditorGUILayout.LabelField("Bundle Version Code", PlayerSettings.Android.bundleVersionCode.ToString());
+        EditorGUILayout.BeginHorizontal();
+        {
+            if (GUILayout.Button("Major Up"))
+            {
+                AddVersion(1, 0);
+            }
+            if (GUILayout.Button("R", GUILayout.Width(30)))
+            {
+                string[] vers = PlayerSettings.bundleVersion.Split('.');
+                int major = int.Parse(vers[0]);
+                int minor = int.Parse(vers[1]);
+                SetVersion(0, minor);
+            }
+
+            if (GUILayout.Button("Minor Up"))
+            {
+                AddVersion(0, 1);
+            }
+            if (GUILayout.Button("R", GUILayout.Width(30)))
+            {
+                string[] vers = PlayerSettings.bundleVersion.Split('.');
+                int major = int.Parse(vers[0]);
+                int minor = int.Parse(vers[1]);
+                SetVersion(major, 0);
+            }
+        }
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.Space();
+
         GUILayout.Label("Android Keystore", EditorStyles.boldLabel);
         _keystoreData.keystorePass = EditorGUILayout.PasswordField("Keystore Password", _keystoreData.keystorePass);
         _keystoreData.keyaliasName = EditorGUILayout.TextField("Key Alias Name", _keystoreData.keyaliasName);

@@ -24,6 +24,16 @@
 
 각 정보를 입력합니다.
 
+### 버전 관리
+
+![](images/appversion.png)
+
+빌드 버전을 올려줘야 할 때 Version 값과 Build Version Code 값을 둘다 수정해줘야 해서 이걸 올려주는 기능을 UI에 추가했습니다.
+
+![](images/versioncontrol.gif)
+
+각 버튼마다 Major Up, Minor Up은 앞과 뒷 자리를 증가시키는 기능이고 버튼 뒤에 R 버튼들은 해당 자리를 0으로 초기화 하는 동작을 합니다.
+
 ## 고마운 분들
 
 - [KeystoreHelper github](https://github.com/megahard/KeystoreHelper)
