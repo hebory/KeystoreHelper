@@ -16,7 +16,8 @@ class KeystoreHelper : EditorWindow
     }
     private KeystoreData _keystoreData = new KeystoreData();
 
-    private static readonly string privateKey = "[PLEASE_ENTER_THE_PRIVATE_KEY_YOU_WANT]";
+    private const int PRIVATE_KEY_LEN = 40;
+    private static string privateKey = "";
     private static readonly string keyDataFileName = "user.keyinfo";
 
     [MenuItem("Window/Keystore Helper")]
@@ -89,6 +90,11 @@ class KeystoreHelper : EditorWindow
         EditorGUILayout.Space();
 
         GUILayout.Label("Android Keystore", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("PrivateKey", privateKey);
+        if (GUILayout.Button("Regenerate Key"))
+        {
+            privateKey = GeneratePrivateKey(PRIVATE_KEY_LEN);
+        }
         _keystoreData.keystorePass = EditorGUILayout.PasswordField("Keystore Password", _keystoreData.keystorePass);
         _keystoreData.keyaliasName = EditorGUILayout.TextField("Key Alias Name", _keystoreData.keyaliasName);
         _keystoreData.keyaliasPass = EditorGUILayout.PasswordField("Key Alias Password", _keystoreData.keyaliasPass);
@@ -130,21 +136,38 @@ class KeystoreHelper : EditorWindow
         string encryptString = Encrypt(jsonString);
         using (FileStream fs = new FileStream(GetKeyDataPath(), FileMode.Create, FileAccess.Write))
         {
+            byte[] bytePrivateKey = System.Text.Encoding.UTF8.GetBytes(privateKey);
+            fs.Write(bytePrivateKey, 0, bytePrivateKey.Length);
+
             byte[] bytes = System.Text.Encoding.UTF8.GetBytes(encryptString);
             fs.Write(bytes, 0, bytes.Length);
         }
+    }
+
+    static KeystoreData NewKeystoreData()
+    {
+        privateKey = GeneratePrivateKey(PRIVATE_KEY_LEN);
+        return new KeystoreData();
     }
 
     public static KeystoreData Load()
     {
         string pathKeyData = GetKeyDataPath();
         if (File.Exists(pathKeyData) == false)
-            return new KeystoreData();
+            return NewKeystoreData();
 
         using (FileStream fs = new FileStream(pathKeyData, FileMode.Open, FileAccess.Read))
         {
-            byte[] bytes = new byte[(int)fs.Length];
-            fs.Read(bytes, 0, (int)fs.Length);
+            if (fs.Length <= 0)
+                return NewKeystoreData();
+
+            byte[] bytePrivateKey = new byte[PRIVATE_KEY_LEN];
+            fs.Read(bytePrivateKey, 0, PRIVATE_KEY_LEN);
+            privateKey = System.Text.Encoding.UTF8.GetString(bytePrivateKey);
+
+            int readLength = (int)fs.Length - PRIVATE_KEY_LEN;
+            byte[] bytes = new byte[readLength];
+            fs.Read(bytes, 0, readLength);
             string encryptData = System.Text.Encoding.UTF8.GetString(bytes);
             string decryptData = Decrypt(encryptData);
 
@@ -183,5 +206,16 @@ class KeystoreHelper : EditorWindow
         result.Mode = CipherMode.ECB;
         result.Padding = PaddingMode.PKCS7;
         return result;
+    }
+
+    static string GeneratePrivateKey(int len)
+    {
+        string keyletter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&()*+,-.:;<=>?@[]^_`{|}~";
+        string gen = "";
+        for (int i = 0; i < len; ++i)
+        {
+            gen += keyletter[Random.Range(0, keyletter.Length)];
+        }
+        return gen;
     }
 }

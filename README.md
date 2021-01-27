@@ -34,6 +34,12 @@
 
 각 버튼마다 Major Up, Minor Up은 앞과 뒷 자리를 증가시키는 기능이고 버튼 뒤에 R 버튼들은 해당 자리를 0으로 초기화 하는 동작을 합니다.
 
+### 개인키 자동 생성
+
+![](images/generateprivatekey.png)
+
+소스 코드에 삽입하던 개인키를 임의로 생성해서 따로 관리할 수 있도록 수정하였습니다.
+
 ## 고마운 분들
 
 - [KeystoreHelper github](https://github.com/megahard/KeystoreHelper)
