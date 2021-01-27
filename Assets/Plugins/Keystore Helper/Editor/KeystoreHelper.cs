@@ -90,7 +90,7 @@ class KeystoreHelper : EditorWindow
         EditorGUILayout.Space();
 
         GUILayout.Label("Android Keystore", EditorStyles.boldLabel);
-        EditorGUILayout.LabelField("PrivateKey", privateKey);
+        EditorGUILayout.TextField("PrivateKey", privateKey);
         if (GUILayout.Button("Regenerate Key"))
         {
             privateKey = GeneratePrivateKey(PRIVATE_KEY_LEN);
