@@ -5,6 +5,8 @@ using System.Security.Cryptography;
 
 class KeystoreHelper : EditorWindow
 {
+    static readonly string kh_version = "1.0";
+
     [System.Serializable]
     public class KeystoreData
     {
@@ -57,6 +59,9 @@ class KeystoreHelper : EditorWindow
 
     void OnGUI()
     {
+        EditorGUILayout.LabelField("Keystore Helper Version", kh_version);
+        EditorGUILayout.Space();
+
         GUILayout.Label("Build Version", EditorStyles.boldLabel);
         EditorGUILayout.LabelField("Version", PlayerSettings.bundleVersion);
         EditorGUILayout.LabelField("Bundle Version Code", PlayerSettings.Android.bundleVersionCode.ToString());
@@ -66,7 +71,11 @@ class KeystoreHelper : EditorWindow
             {
                 AddVersion(1, 0);
             }
-            if (GUILayout.Button("R", GUILayout.Width(30)))
+            if (GUILayout.Button(new GUIContent("Dn", "Major Version Down")))
+            {
+                AddVersion(-1, 0);
+            }
+            if (GUILayout.Button(new GUIContent("Re", "Reset Major Version"), GUILayout.Width(30)))
             {
                 string[] vers = PlayerSettings.bundleVersion.Split('.');
                 int major = int.Parse(vers[0]);
@@ -78,7 +87,11 @@ class KeystoreHelper : EditorWindow
             {
                 AddVersion(0, 1);
             }
-            if (GUILayout.Button("R", GUILayout.Width(30)))
+            if (GUILayout.Button(new GUIContent("Dn", "Minor Version Down")))
+            {
+                AddVersion(0, -1);
+            }
+            if (GUILayout.Button(new GUIContent("Re", "Reset Minor Version"), GUILayout.Width(30)))
             {
                 string[] vers = PlayerSettings.bundleVersion.Split('.');
                 int major = int.Parse(vers[0]);
