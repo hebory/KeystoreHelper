@@ -5,7 +5,16 @@ using System.Security.Cryptography;
 
 class KeystoreHelper : EditorWindow
 {
-    static readonly string kh_version = "1.0";
+    static readonly string kh_version = "1.1";
+
+#if UNITY_2020_3_OR_NEWER
+    public enum AndroidMinification
+    {
+        None = 0,
+        Proguard = 1,
+        Gradle = 2
+    }
+#endif
 
     [System.Serializable]
     public class KeystoreData
@@ -111,10 +120,12 @@ class KeystoreHelper : EditorWindow
         _keystoreData.keystorePass = EditorGUILayout.PasswordField("Keystore Password", _keystoreData.keystorePass);
         _keystoreData.keyaliasName = EditorGUILayout.TextField("Key Alias Name", _keystoreData.keyaliasName);
         _keystoreData.keyaliasPass = EditorGUILayout.PasswordField("Key Alias Password", _keystoreData.keyaliasPass);
-        EditorGUILayout.Space();
 
+#if UNITY_2019
+        EditorGUILayout.Space();
         GUILayout.Label("Build Settings", EditorStyles.boldLabel);
         _keystoreData.releaseMinify = (AndroidMinification)EditorGUILayout.EnumPopup("Release Minify", _keystoreData.releaseMinify);
+#endif
     }
 
     static string GetKeyDataPath()
@@ -140,7 +151,9 @@ class KeystoreHelper : EditorWindow
         PlayerSettings.Android.keyaliasName = keystoreData.keyaliasName;
         PlayerSettings.Android.keyaliasPass = keystoreData.keyaliasPass;
 
+#if UNITY_2019
         EditorUserBuildSettings.androidReleaseMinification = keystoreData.releaseMinify;
+#endif
     }
 
     static void Save(KeystoreData keystoreData)
